@@ -14,6 +14,8 @@ import { Auth } from 'firebase/auth';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from './Auth';
 import { useEffect } from 'react';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { app } from './Auth';
 
 
 
@@ -75,10 +77,22 @@ export default function SignUpScreen({navigation}:any) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      
   
       if (user) {
         alert("Account created successfully!");
         navigation.navigate('Login'); // OR go straight to 'Home' screen if you want auto-login effect
+
+        const db = getFirestore(app);
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        createdAt: new Date(),
+      });
       }
     } catch (error: any) {
       console.log('Sign-up error:', error.code);

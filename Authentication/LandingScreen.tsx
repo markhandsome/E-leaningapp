@@ -8,11 +8,10 @@ import {
   Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../App';
+import { RootStackParamList } from './App';
 
 type LandingScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Landing'>;
-};
+  navigation: StackNavigationProp<RootStackParamList, 'Landing'>;};
 
 export default function LandingScreen({ navigation }: LandingScreenProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -48,7 +47,7 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
         <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-      </View>rtd
+      </View>
     </Animated.View>
   );
 }

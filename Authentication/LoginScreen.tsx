@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../App'; // make sure this path is correct
+import { RootStackParamList } from './App'; // make sure this path is correct
 import { Auth, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './Auth';
 
@@ -23,6 +23,7 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState ("");
+  
 
   const handlelogin = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,7 +43,11 @@ export default function LoginScreen() {
       const user = userCredential.user;
   
       if (user) {
-        Alert.alert("Login Successful");
+       
+       
+        navigation.navigate('Learning')
+
+        
         // Optionally navigate:
         // navigation.navigate('Home');
       }
