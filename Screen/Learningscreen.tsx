@@ -25,7 +25,7 @@ const courses = [
         Description: 'Understand fabric grain lines and how to properly lay and cut patterns.'
     },
     {
-        title: 'How to put threads in sewing machine',
+        title: 'put threads in sewing machine',
         image: require('../assets/Task3.png'),
         screen: 'ThreatsSewingScreen',
         Description: 'A beginner’s guide to threading your sewing machine step-by-step.'
@@ -51,28 +51,61 @@ const LearningScreen = () => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setUid(user.uid);
-
-                // Fetch username from Firestore
+    
                 try {
+                    // Fetch user profile info
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists()) {
                         const userData = userDoc.data();
                         setUsername(userData.username || '');
                         setPoints(userData.points ?? 0);
-                        setUserCourses(userData.courses || {}); // Assuming 'username' field
+                    }
+    
+                    // Fetch user progress
+                    const progressDoc = await getDoc(doc(db, 'userProgress', user.uid));
+                    if (progressDoc.exists()) {
+                        const progressData = progressDoc.data();
+                        const courseProgress: any = {};
+    
+                        // Map tasks to course titles
+                        const taskToCourseTitleMap: Record<string, string> = {
+                            task1: 'pattern drafting tutorials',
+                            task2: 'How to layout & cut',
+                            task3: 'How to put threads in sewing machine',
+                            task4: 'Parts of sewing machine',
+                        };
+    
+                        Object.keys(taskToCourseTitleMap).forEach(taskKey => {
+                            const taskData = progressData[taskKey];
+                            if (taskData) {
+                                const lessons = Object.values(taskData);
+                                const totalPossiblePoints = lessons.length * 20;
+                                const earnedPoints = lessons.reduce((acc: number, val: any) => acc + val, 0);
+                                const progressPercent = Math.round((earnedPoints / totalPossiblePoints) * 100);
+    
+                                const courseTitle = taskToCourseTitleMap[taskKey];
+                                courseProgress[courseTitle] = { points: progressPercent };
+                            } else {
+                                const courseTitle = taskToCourseTitleMap[taskKey];
+                                courseProgress[courseTitle] = { points: 0 };
+                            }
+                        });
+    
+                        setUserCourses(courseProgress);
                     } else {
-                        console.log('No such user doc!');
+                        console.log('No progress data found.');
                     }
                 } catch (error) {
-                    console.log('Error fetching user data:', error);
+                    console.error('Error fetching user data:', error);
                 }
             } else {
                 setUid(null);
             }
         });
-
+    
         return unsubscribe;
     }, []);
+    
 
     const handleCoursePress = (courseTitle: string) => {
         // Navigate to the course screen
