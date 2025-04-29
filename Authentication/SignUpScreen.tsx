@@ -16,6 +16,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredentia
 import { auth } from './Auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { app } from './Auth';
+import * as firebase from 'firebase/app';
 
 WebBrowser.maybeCompleteAuthSession();
 

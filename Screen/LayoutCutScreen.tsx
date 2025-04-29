@@ -20,6 +20,7 @@ import { RootStackParamList } from '../Authentication/App';
 import { getAuth } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker';
+import * as firebase from 'firebase/app';
 
 
 type PatternDraftingScreen = StackNavigationProp<RootStackParamList, 'PatternDraftingScreen'>;
@@ -470,21 +471,6 @@ const CourseScreen = () => {
       )}
 
 
-      {/* Lesson 5 */}
-      <View style={styles.lessonItem}>
-        <View style={styles.lessonNumber}>
-          <Text style={styles.lessonNumberText}>05</Text>
-        </View>
-        <Text style={styles.lessonTitle}>Lesson 5: Upload Your first Cut Out Design Here</Text>
-
-        {!lesson5Submitted ? (
-          <TouchableOpacity onPress={pickAndUploadImage}>
-            <Ionicons name="cloud-upload-outline" size={28} color="#000" />
-          </TouchableOpacity>
-        ) : (
-          <Ionicons name="checkmark-circle" size={28} color="green" />
-        )}
-      </View>
 
 
       <TouchableOpacity>

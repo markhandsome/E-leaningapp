@@ -20,17 +20,22 @@ import { RootStackParamList } from '../Authentication/App';
 import { getAuth } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker';
+import Imageview from 'react-native-image-viewing';
+import * as firebase from 'firebase/app';
 
 
 type PatternDraftingScreen = StackNavigationProp<RootStackParamList, 'PatternDraftingScreen'>;
 const db = getFirestore();
 
 const CourseScreen = () => {
+
+  const [isImageViewVisible, setIsImageViewVisible] = useState(false); // <--- add state
   // Points state for each lesson
   const [task1Points, setTask1Points] = useState(0);
   const [maxPoints, setMaxPoints] = useState(100);
 
   const [lesson1Points, setLesson1Points] = useState(0);
+  const [lesson2Points, setLesson2Points] = useState(0);
   const [lesson3Points, setLesson3Points] = useState(0);
   const [lesson4Points, setLesson4Points] = useState(0);
   const [lesson5Points, setLesson5Points] = useState(0);
@@ -77,7 +82,7 @@ const CourseScreen = () => {
           const lesson5 = task1.lesson5 || 0;
 
           setLesson1Points(lesson1);
-          setQuizAnswered(lesson2 > 0);
+          setLesson2Points(lesson2);
           setShowVideo(lesson1 === 0);
           setLesson3Points(lesson3);
           setQuiz3Answered(lesson3 > 0); // assumes quiz is the final step for lesson 3
@@ -120,69 +125,12 @@ const CourseScreen = () => {
       setLesson1Points(20);
       setShowVideo(false);
       setTask1Points(task1Points + 20);
-
-      if (!quizAnswered) {
-        setShowQuizModal(true);
-      }
     }
   };
 
-  const handleQuizSubmit = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user && answer.trim().toLowerCase() === 'ruler') {
-      const userId = user.uid;
-      const progressRef = doc(db, 'userProgress', userId);
-      const progressSnap = await getDoc(progressRef);
-      const prev = progressSnap.exists() ? progressSnap.data().task1 || {} : {};
-
-      await setDoc(progressRef, {
-        task1: {
-          lesson1: prev.lesson1 || 0,
-          lesson2: 20,
-          lesson3: prev.lesson3 || 0,
-          lesson4: prev.lesson4 || 0,
-          lesson5: prev.lesson5 || 0,
-        },
-      }, { merge: true });
-
-      setQuizAnswered(true);
-      setShowQuizModal(false);
-      setTask1Points(task1Points + 20);
-    } else {
-      alert('Incorrect. Try again!');
-    }
-  };
-
-  // Lesson 3 functions
-  const handleQuiz3Submit = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user && quiz3Answer.trim().toLowerCase() === 'measurement') {
-      const userId = user.uid;
-      const progressRef = doc(db, 'userProgress', userId);
-      const progressSnap = await getDoc(progressRef);
-      const prev = progressSnap.exists() ? progressSnap.data().task1 || {} : {};
-
-      await setDoc(progressRef, {
-        task1: {
-          ...prev,
-          lesson3: 20,
-        },
-      }, { merge: true });
-
-      setLesson3Points(20);
-      setQuiz3Answered(true);
-      setShowQuiz3Modal(false);
-      setTask1Points(task1Points + 20);
-    } else {
-      alert('Incorrect. Try again!');
-    }
-  };
-
-  const handleCompleteLesson3 = async () => {
+  //  {LESSON 2}
+  const [showTutorialDetails, setShowTutorialDetails] = useState(false);
+  const handleTutorialClick = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
 
@@ -194,15 +142,48 @@ const CourseScreen = () => {
 
       await setDoc(progressRef, {
         task1: {
-          ...prev,
-          lesson3: 20,
+          lesson1: prev.lesson1 || 0,
+          lesson2: 20, // <-- Add 20 points to Lesson 2!
+          lesson3: prev.lesson3 || 0,
+          lesson4: prev.lesson4 || 0,
+          lesson5: prev.lesson5 || 0,
         },
       }, { merge: true });
 
-      setLesson3Points(20);
-      setTask1Points(task1Points + 20);
+      setLesson2Points(20); // <-- You need this state
+      setTask1Points(task1Points + 20); // Add to total points
+      setShowTutorialDetails(true); // Show the guide after clicking
     }
   };
+
+
+
+  // Lesson 3 functions
+  const [showtutorial3details, setShowtutorial3details] = useState(false);
+  const handletutorial3dertailsClick = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      const userId = user.uid;
+      const progressRef = doc(db, 'userProgress', userId);
+      const progressSnap = await getDoc(progressRef);
+      const prev = progressSnap.exists() ? progressSnap.data().task1 || {} : {};
+      await setDoc(progressRef, {
+        task1: {
+          lesson1: prev.lesson1 || 0,
+          lesson2: prev.lesson2 || 0,
+          lesson3: 20, // <-- Add 20 points to Lesson 3!
+          lesson4: prev.lesson4 || 0,
+          lesson5: prev.lesson5 || 0,
+        },
+      }, { merge: true });
+      setLesson3Points(20); // <-- You need this state
+      setTask1Points(task1Points + 20); // Add to total points
+      setShowtutorial3details(true); // Show the guide after clicking
+    }
+  };
+
 
   // Lesson 4 functions
   const handleVideoLesson4End = async () => {
@@ -347,7 +328,7 @@ const CourseScreen = () => {
         <View style={{ height: 300, marginBottom: 20 }}>
           <WebView
             source={{
-              uri: 'https://www.youtube.com/watch?v=VbrphCFdU8k&list=PLlIwtAy1pUoSSLiIkPkDTHDpSgY1-i8Ae&index=1',
+              uri: 'https://youtu.be/0WVOhnq1cro',
             }}
             javaScriptEnabled
             onLoad={() => {
@@ -365,83 +346,150 @@ const CourseScreen = () => {
         <View style={styles.lessonNumber}>
           <Text style={styles.lessonNumberText}>02</Text>
         </View>
-        <Text style={styles.lessonTitle}>Lesson 2: Quiz</Text>
-        {!quizAnswered ? (
-          <TouchableOpacity onPress={() => setShowQuizModal(true)}>
-            <Ionicons name="help-circle-outline" size={28} color="#000" />
+        <Text style={styles.lessonTitle}>Lesson 2: Pattern Drafting Guide</Text>
+
+        {!showTutorialDetails ? (
+          <TouchableOpacity onPress={handleTutorialClick}>
+            <Ionicons name="book-outline" size={28} color="#000" />
           </TouchableOpacity>
         ) : (
           <Ionicons name="checkmark-circle" size={28} color="green" />
         )}
       </View>
 
+      {/* Tutorial Details */}
+      {showTutorialDetails && (
+        <View style={{ marginTop: 20, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }}>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>Pattern Drafting: Front Bodice Sloper</Text>
 
-      {/* Quiz Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showQuizModal}
-        onRequestClose={() => setShowQuizModal(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Quiz: Lesson 1</Text>
-            <Text style={styles.modalQuestion}>
-              What tool is commonly used to draw straight lines in pattern drafting?
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your answer"
-              value={answer}
-              onChangeText={setAnswer}
+          {/* Objectives */}
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Objectives:</Text>
+          <Text style={{ marginBottom: 5 }}>a. Enumerate the measurements needed for drafting a front bodice pattern.</Text>
+          <Text style={{ marginBottom: 5 }}>b. Apply the exact measure in drafting a front bodice pattern.</Text>
+          <Text style={{ marginBottom: 5 }}>c. Demonstrate accurately the drafting of the front bodice pattern.</Text>
+
+          {/* Introduction */}
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Introduction:</Text>
+          <Text style={{ marginBottom: 5 }}>
+            Extending construction lines, adjusting measurements to account for body shape, and adding allowances for both roominess and good fit are how the front bodice pattern develops from the back-bodice pattern.
+          </Text>
+
+          {/* Measurements Needed */}
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Measurements Needed to Draft the Front Bodice Pattern:</Text>
+          <Text style={{ marginBottom: 5 }}>- Figure Front</Text>
+          <Text style={{ marginBottom: 5 }}>- Shoulder</Text>
+          <Text style={{ marginBottom: 5 }}>- Bust Circumference</Text>
+          <Text style={{ marginBottom: 5 }}>- Waistline</Text>
+          <Text style={{ marginBottom: 5 }}>- Bust Height</Text>
+          <Text style={{ marginBottom: 5 }}>- Bust Distance</Text>
+
+          {/* Materials Needed */}
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Drafting Materials Needed:</Text>
+          <Text style={{ marginBottom: 5 }}>- French curve (for shaping neckline and armhole)</Text>
+          <Text style={{ marginBottom: 5 }}>- Hip curve (for shaping hemline and hips)</Text>
+          <Text style={{ marginBottom: 5 }}>- Tape measure</Text>
+
+          {/* Procedure */}
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Procedure:</Text>
+          <Text style={{ marginBottom: 5 }}>Draw a construction line from Y down to Z as shown in the illustration.</Text>
+          <Text style={{ marginBottom: 5 }}>a-b: Back Figure Length measurement, then square extended line a and line b as shown.</Text>
+          <Text style={{ marginBottom: 5 }}>a-c: Draw 3 inches down as shown.</Text>
+          <Text style={{ marginBottom: 5 }}>a-d: Bust height measurement.</Text>
+          <Text style={{ marginBottom: 5 }}>a-e: 2 ¼ inches measurement.</Text>
+          <Text style={{ marginBottom: 5 }}>a-g: ½ of shoulder measurement, then square down to g.</Text>
+          <Text style={{ marginBottom: 5 }}>a-h: ¼ of bust measurement plus 1 inch.</Text>
+          <Text style={{ marginBottom: 5 }}>g-f: 1 inch measurement backward from g to f, then square down as shown.</Text>
+          <Text style={{ marginBottom: 5 }}>e-i: 1 ½ inches down.</Text>
+          <Text style={{ marginBottom: 5 }}>j-i: Measure 4 inches (shown in the illustration).</Text>
+          <Text style={{ marginBottom: 5 }}>j-k: Measure 2 inches down, then square k1 to the right to get k2 as shown.</Text>
+          <Text style={{ marginBottom: 5 }}>d-n: ½ of bust distance measurement.</Text>
+          <Text style={{ marginBottom: 5 }}>d-o: ½ of bust distance measurement, connect to n.</Text>
+          <Text style={{ marginBottom: 5 }}>b-l: ¼ of waist measurement plus 1 ½ inches (connect m to k2).</Text>
+          <Text style={{ marginBottom: 5 }}>o-p: ¾ measurement (connect p-n).</Text>
+          <Text style={{ marginBottom: 5 }}>o-q: ¾ measurement (connect q-n).</Text>
+          <Text style={{ marginBottom: 5 }}>l-l2: ½ upward measurement (connect q-l2 using hip curve).</Text>
+
+          <TouchableOpacity onPress={() => setIsImageViewVisible(true)}>
+            <Image
+              source={require('../assets/Ptrnfrontbod.jpg')}
+              style={{ width: '100%', height: 300, marginTop: 15, resizeMode: 'contain' }}
             />
-            <Pressable onPress={handleQuizSubmit} style={styles.modalButton}>
-              <Text style={{ color: '#fff', textAlign: 'center' }}>Submit</Text>
-            </Pressable>
-          </View>
+          </TouchableOpacity>
+
+          {/* Image Viewer */}
+          <Imageview
+            images={[{ uri: Image.resolveAssetSource(require('../assets/Ptrnfrontbod.jpg')).uri }]}
+            imageIndex={0}
+            visible={isImageViewVisible}
+            onRequestClose={() => setIsImageViewVisible(false)}
+          />
         </View>
-      </Modal>
+      )}
 
 
+      {/* Lesson 3 - updated like Lesson 1 */}
 
       <View style={styles.lessonItem}>
         <View style={styles.lessonNumber}>
           <Text style={styles.lessonNumberText}>03</Text>
         </View>
-        <Text style={styles.lessonTitle}>Lesson 3: Pattern Measurement</Text>
-        {!quiz3Answered ? (
-          <TouchableOpacity onPress={() => setShowQuiz3Modal(true)}>
-            <Ionicons name="help-circle-outline" size={28} color="#000" />
+        <Text style={styles.lessonTitle}>Lesson 3: Pattern Measurement</Text> 
+        {!showtutorial3details ? (
+          <TouchableOpacity onPress={handletutorial3dertailsClick}>
+            <Ionicons name="book-outline" size={28} color="#000" />
           </TouchableOpacity>
         ) : (
           <Ionicons name="checkmark-circle" size={28} color="green" />
         )}
       </View>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showQuiz3Modal}
-        onRequestClose={() => setShowQuiz3Modal(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Quiz: Lesson 3</Text>
-            <Text style={styles.modalQuestion}>
-              What is the term for taking body dimensions before drafting a pattern?
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your answer"
-              value={quiz3Answer}
-              onChangeText={setQuiz3Answer}
-            />
-            <Pressable onPress={handleQuiz3Submit} style={styles.modalButton}>
-              <Text style={{ color: '#fff', textAlign: 'center' }}>Submit</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+  {/* Tutorial Details */}
+{showtutorial3details && (
+  <View style={{ marginTop: 20, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }}>
+    <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>Pattern Drafting: Sleeve Sloper</Text>
+
+    {/* Procedure */}
+    <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>Procedure:</Text>
+    <Text style={{ marginBottom: 5 }}>a = Initial point</Text>
+    <Text style={{ marginBottom: 5 }}>a-b = 1/3 of the measurement of the armhole minus 1 cm</Text>
+    <Text style={{ marginBottom: 5 }}>a-c = Length measurement of sleeves</Text>
+    <Text style={{ marginBottom: 5 }}>d = Armhole measurement of the back (from back sloper)</Text>
+    <Text style={{ marginBottom: 5 }}>a-e = Armhole measurement of the front (from front sloper)</Text>
+    <Text style={{ marginBottom: 5 }}>= connect line d, b, and c</Text>
+    <Text style={{ marginBottom: 5 }}>= Measure the length of b-c, then do the same measurement of d-f₁ and e-g₁</Text>
+    <Text style={{ marginBottom: 5 }}>f₁-f₂ = Measure the upper arm girth minus the measurement of lower arm girth divided by 2, then connect d-f₂</Text>
+    <Text style={{ marginBottom: 5 }}>g₁-g₂ = Measure the upper arm girth minus the measurement of lower arm girth divided by 2, then connect e-g₂</Text>
+    <Text style={{ marginBottom: 5 }}>(e.g.) 37 cm - 35 cm / 2 = 1 cm</Text>
+
+    {/* To obtain the shape of the armhole */}
+    <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>To obtain the shape of the armhole:</Text>
+    <Text style={{ marginBottom: 5 }}>- Get the measurement of a-d, after dividing a-d by 4, note points as 1, 2, and 3</Text>
+    <Text style={{ marginBottom: 5 }}>- Get the measurement of a-e, after dividing a-e by 4, note points as 4, 5, and 6</Text>
+    <Text style={{ marginBottom: 5 }}>- 1 = 1 = middle of d-1, then measure 0.5 cm down</Text>
+    <Text style={{ marginBottom: 5 }}>- 3 = 3 = measure 1.75 cm up</Text>
+    <Text style={{ marginBottom: 5 }}>- 4 = 4 = measure 1.75 cm up</Text>
+    <Text style={{ marginBottom: 5 }}>- 5₁ = center of 5 and 6</Text>
+    <Text style={{ marginBottom: 5 }}>- 6₁ = center of 6 and e, then mark 1 cm down</Text>
+
+    {/* Sleeve Pattern Image */}
+    <TouchableOpacity onPress={() => setIsImageViewVisible(true)}>
+      <Image
+        source={require('../assets/PtrnSleeveSloper.png')}
+        style={{ width: '100%', height: 300, marginTop: 15, resizeMode: 'contain' }}
+      />
+    </TouchableOpacity>
+
+    {/* Image Viewer */}
+    <Imageview
+      images={[{ uri: Image.resolveAssetSource(require('../assets/PtrnSleeveSloper.png')).uri }]}
+      imageIndex={0}
+      visible={isImageViewVisible}
+      onRequestClose={() => setIsImageViewVisible(false)}
+    />
+  </View>
+)}
+
+
 
 
       {/* Lesson 4 - updated like Lesson 1 */}
@@ -478,21 +526,7 @@ const CourseScreen = () => {
       )}
 
 
-      {/* Lesson 5 */}
-      <View style={styles.lessonItem}>
-        <View style={styles.lessonNumber}>
-          <Text style={styles.lessonNumberText}>05</Text>
-        </View>
-        <Text style={styles.lessonTitle}>Lesson 5: Upload Your First Draft</Text>
-
-        {!lesson5Submitted ? (
-          <TouchableOpacity onPress={pickAndUploadImage}>
-            <Ionicons name="cloud-upload-outline" size={28} color="#000" />
-          </TouchableOpacity>
-        ) : (
-          <Ionicons name="checkmark-circle" size={28} color="green" />
-        )}
-      </View>
+  
 
 
       <TouchableOpacity>

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'; // or use other icons depending o
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Authentication/App';
 import { useNavigation } from '@react-navigation/native';
+import * as firebase from 'firebase/app';
 
 type LayoutCutScreen = StackNavigationProp<RootStackParamList, 'LayoutCutScreen'>;
 const CourseScreen = () => {

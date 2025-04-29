@@ -13,6 +13,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './App'; // make sure this path is correct
 import { Auth, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './Auth';
+import * as firebase from 'firebase/app';
 
 // define the navigation prop for this screen
 type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;

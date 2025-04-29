@@ -8,6 +8,7 @@ import { getDoc, doc, getFirestore } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Authentication/App';
+import * as firebase from 'firebase/app';
 
 type LearningScreenProp = StackNavigationProp<RootStackParamList, 'Learning'>;
 const db = getFirestore();
