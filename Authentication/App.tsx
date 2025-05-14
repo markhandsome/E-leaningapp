@@ -9,6 +9,7 @@ import PatternDraftingScreen from '../Screen/PatternDraftingScreen';
 import LayoutCutScreen from '../Screen/LayoutCutScreen';
 import ThreatsSewingScreen from '../Screen/ThreatsSewingScreen';
 import SewingMachinePartsScreen from '../Screen/SewingMachinePartsScreen';
+import Profile from '../Screen/Profile';
 
 export type RootStackParamList = {
   Landing: undefined;
@@ -19,6 +20,8 @@ export type RootStackParamList = {
   LayoutCutScreen: undefined;
   ThreatsSewingScreen: undefined;
   SewingMachinePartsScreen: undefined;
+  Profile: undefined;
+
 };
 
 
@@ -30,7 +33,7 @@ export default function App() {
       <Stack.Navigator
       
         screenOptions={{
-          gestureEnabled: true,
+          gestureEnabled: false,
           headerShown: false,
           ...TransitionPresets.FadeFromBottomAndroid,
         }}
@@ -45,6 +48,7 @@ export default function App() {
         <Stack.Screen name="LayoutCutScreen" component={LayoutCutScreen}/>
         <Stack.Screen name="ThreatsSewingScreen" component={ThreatsSewingScreen}/>
         <Stack.Screen name="SewingMachinePartsScreen" component={SewingMachinePartsScreen}/>
+        <Stack.Screen name="Profile" component={Profile}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

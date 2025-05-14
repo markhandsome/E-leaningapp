@@ -55,15 +55,15 @@ export default function SignUpScreen({ navigation }: any) {
   const handleSignUp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      alert("Please enter a valid email.");
+      alert('Please enter a valid email.');
       return;
     }
     if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
+      alert('Password must be at least 6 characters.');
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      alert('Passwords do not match.');
       return;
     }
 
@@ -72,7 +72,7 @@ export default function SignUpScreen({ navigation }: any) {
       const user = userCredential.user;
       if (user) {
         const db = getFirestore(app);
-        await setDoc(doc(db, "users", user.uid), {
+        await setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
           username: username,
           firstName: firstName,
@@ -80,7 +80,7 @@ export default function SignUpScreen({ navigation }: any) {
           email: email,
           createdAt: new Date(),
         });
-        alert("Account created successfully!");
+        alert('Account created successfully!');
         navigation.navigate('Login');
       }
     } catch (error: any) {
@@ -116,6 +116,7 @@ export default function SignUpScreen({ navigation }: any) {
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
+            placeholderTextColor="#555555"
           />
 
           <Text style={styles.placeholders}>Name</Text>
@@ -125,12 +126,14 @@ export default function SignUpScreen({ navigation }: any) {
               style={styles.inputRow}
               value={firstName}
               onChangeText={setFirstName}
+              placeholderTextColor="#555555"
             />
             <TextInput
               placeholder="Last Name"
               style={styles.inputRow}
               value={lastName}
               onChangeText={setLastName}
+              placeholderTextColor="#555555"
             />
           </View>
 
@@ -142,6 +145,7 @@ export default function SignUpScreen({ navigation }: any) {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            placeholderTextColor="#555555"
           />
 
           <Text style={styles.placeholders}>Password</Text>
@@ -152,6 +156,7 @@ export default function SignUpScreen({ navigation }: any) {
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
+              placeholderTextColor="#555555"
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Image
@@ -173,6 +178,7 @@ export default function SignUpScreen({ navigation }: any) {
               secureTextEntry={!showConfirm}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
+              placeholderTextColor="#555555"
             />
             <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)}>
               <Image
@@ -201,7 +207,7 @@ export default function SignUpScreen({ navigation }: any) {
           </View>
 
           <View style={styles.loginPrompt}>
-            <Text style={{ color: '#888' }}>Already have an account? </Text>
+            <Text style={{ color: '#666666' }}>Already have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.loginLink}>Log In</Text>
             </TouchableOpacity>
@@ -215,11 +221,10 @@ export default function SignUpScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF', // White background
     alignItems: 'center',
     paddingTop: 80,
     padding: 20,
@@ -228,11 +233,12 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#FF6B6B',
+    color: '#333333', // Dark gray
   },
   subtitle: {
     fontSize: 20,
     marginBottom: 30,
+    color: '#555555', // Medium gray
   },
   placeholders: {
     fontWeight: 'bold',
@@ -240,14 +246,15 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
     fontSize: 18,
     textAlign: 'left',
+    color: '#333333', // Dark gray
   },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F5F5', // Light gray
     width: '100%',
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
-    paddingBottom: 20,
+    color: '#333333', // Dark gray text
   },
   rowContainer: {
     flexDirection: 'row',
@@ -256,15 +263,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   inputRow: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F5F5', // Light gray
     width: '48%',
     padding: 15,
     borderRadius: 10,
+    color: '#333333', // Dark gray text
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F5F5', // Light gray
     width: '100%',
     paddingHorizontal: 15,
     borderRadius: 10,
@@ -273,15 +281,16 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
-    tintColor: 'gray',
+    tintColor: '#555555', // Medium gray
     marginLeft: 10,
   },
   inputFlex: {
     flex: 1,
     paddingVertical: 15,
+    color: '#333333', // Dark gray text
   },
   button: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#333333', // Dark gray
     width: '100%',
     padding: 15,
     borderRadius: 10,
@@ -289,12 +298,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF', // White
     fontWeight: 'bold',
   },
   or: {
     marginVertical: 15,
-    color: '#999',
+    color: '#666666', // Medium gray
   },
   socials: {
     flexDirection: 'row',
@@ -307,7 +316,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginLink: {
-    color: '#FF6B6B',
+    color: '#333333', // Dark gray
     fontWeight: 'bold',
   },
 });

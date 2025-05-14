@@ -4,12 +4,12 @@
     "slug": "E-learningApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Trendifylogo.jpg",
     "userInterfaceStyle": "light",
     "scheme": "E-learningApp",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/Trendifylogo.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Trendifylogo.jpg",
         "backgroundColor": "#ffffff"
       },
       "package": "com.capati10.ElearningApp"

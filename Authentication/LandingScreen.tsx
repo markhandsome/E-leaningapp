@@ -11,7 +11,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './App';
 
 type LandingScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Landing'>;};
+  navigation: StackNavigationProp<RootStackParamList, 'Landing'>;
+};
 
 export default function LandingScreen({ navigation }: LandingScreenProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -27,70 +28,87 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
   };
 
   return (
-    <Animated.View style={[styles.container, {
-      backgroundColor: fadeAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['#F5F3FF', '#FFFFFF'],
-      }),
-    }]}>
+    <View style={styles.container}>
       <Image
-        source={require('../assets/Register.png')}
+        source={require('../assets/logo.jpg')}
         style={styles.image}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Master Sewing{'\n'}with Easy{'\n'}Tutorials</Text>
-
+      <Text style={styles.tagline}>
+        <Text style={styles.taglinePart}>Learn it. Wear it.</Text>
+        <Text style={styles.taglinePart}> Own it.</Text>
+      </Text>
       <View style={styles.buttonRow}>
-        <TouchableOpacity onPress={()=> navigation.navigate ('SignUp')} style={[styles.button, styles.activeButton]}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('SignUp')}
+          style={[styles.button, styles.activeButton]}
+        >
           <Text style={[styles.buttonText, styles.activeText]}>Register</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   image: {
-    width: 300,
-    height: 300,
-    borderRadius: 30,
-    marginBottom: 20,
+    width: 400, // Increased from 200 to 300 for better visibility
+    height: 300, // Increased from 200 to 300
+     // Adjusted margin for better spacing
   },
-  title: {
-    fontSize: 28,
+  brandTitle: {
+    fontSize: 40,
+    fontFamily: 'Georgia',
+    fontWeight: 'normal',
+    color: '#000',
+   
+  },
+  tagline: {
+    fontSize: 24,
+    marginBottom: 40,
+    textAlign: 'center',
+  },
+  taglinePart: {
+    fontFamily: 'Georgia',
+    fontStyle: 'italic',
+    color: '#000',
+  },
+  taglineOwn: {
+    fontFamily: 'Georgia',
     fontWeight: 'bold',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
-    marginVertical: 20,
     color: '#000',
   },
   buttonRow: {
     flexDirection: 'row',
     backgroundColor: '#E5E5EA',
-    borderRadius: 10,
+    borderRadius: 25,
     padding: 5,
-    width: '100%',
+    width: '80%',
+    justifyContent: 'space-between',
   },
   button: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 15,
+    borderRadius: 20,
     alignItems: 'center',
+    marginHorizontal: 5,
   },
   activeButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   buttonText: {
     color: '#333',
+    fontSize: 16,
     fontWeight: '500',
   },
   activeText: {

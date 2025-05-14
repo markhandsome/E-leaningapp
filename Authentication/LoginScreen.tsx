@@ -11,50 +11,42 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './App'; // make sure this path is correct
-import { Auth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './Auth';
 import * as firebase from 'firebase/app';
 
 // define the navigation prop for this screen
 type LoginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
-
 export default function LoginScreen() {
   const navigation = useNavigation<LoginScreenProp>();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState ("");
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handlelogin = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
     if (!emailRegex.test(email)) {
-      Alert.alert("Invalid email format");
+      Alert.alert('Invalid email format');
       return;
     }
-  
+
     if (password.length < 6) {
-      Alert.alert("Password must be at least 6 characters long");
+      Alert.alert('Password must be at least 6 characters long');
       return;
     }
-  
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
-      if (user) {
-       
-       
-        navigation.navigate('Learning')
 
-        
-        // Optionally navigate:
-        // navigation.navigate('Home');
+      if (user) {
+        navigation.navigate('Learning');
       }
     } catch (error: any) {
       const errorCode = error.code;
-  
+
       switch (errorCode) {
         case 'auth/user-not-found':
           Alert.alert('No account found with this email.');
@@ -76,10 +68,25 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.hello}>Hello Again</Text>
       <Text style={styles.welcome}>Designer</Text>
-      <Text style= {styles.placeholder}>Email</Text>
-      <TextInput placeholder="Enter Email" style={styles.input} value={email} onChangeText={setEmail}/>
-      <Text style= {styles.placeholder}>Password</Text>
-      <TextInput placeholder="Password" style={styles.input} secureTextEntry  value={password} onChangeText={setPassword}/>
+      <Text style={styles.placeholder}>Email</Text>
+      <TextInput
+        placeholder="Enter Email"
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        placeholderTextColor="#555555"
+      />
+      <Text style={styles.placeholder}>Password</Text>
+      <TextInput
+        placeholder="Password"
+        style={styles.input}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        placeholderTextColor="#555555"
+      />
 
       <TouchableOpacity>
         <Text style={styles.recover}>Recover Password</Text>
@@ -110,55 +117,57 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF', // White background
     alignItems: 'center',
     padding: 20,
     paddingTop: 80,
   },
-  placeholder:{
+  placeholder: {
     fontWeight: 'bold',
     alignSelf: 'flex-start',
     paddingLeft: 2,
     fontSize: 18,
-    textAlign: 'left'
+    textAlign: 'left',
+    color: '#333333', // Dark gray
   },
   hello: {
     fontSize: 38,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#333333', // Dark gray
   },
   welcome: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 80,
+    color: '#555555', // Medium gray
   },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F5F5', // Light gray
     width: '100%',
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
-    paddingBottom: 20
+    color: '#333333', // Dark gray text
   },
   recover: {
     alignSelf: 'flex-end',
-    color: 'black',
+    color: '#333333', // Dark gray
     marginBottom: 20,
   },
   signInBtn: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#333333', // Dark gray
     width: '100%',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
   },
   signInText: {
-    color: '#fff',
+    color: '#FFFFFF', // White
     fontWeight: 'bold',
   },
   or: {
     marginVertical: 15,
-    color: '#999',
+    color: '#666666', // Medium gray
   },
   socials: {
     flexDirection: 'row',
@@ -168,16 +177,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginHorizontal: 10,
+    tintColor: '#555555', // Medium gray
   },
   bottomContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   bottomText: {
-    color: '#444',
+    color: '#666666', // Medium gray
   },
   register: {
-    color: '#007BFF',
+    color: '#333333', // Dark gray
     fontWeight: 'bold',
   },
 });
